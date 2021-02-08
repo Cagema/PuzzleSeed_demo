@@ -84,7 +84,9 @@ public class Tile : MonoBehaviour
 
 	private GameObject GetAdjacent(Vector2 castDir)
     {
+		transform.gameObject.layer = 2;
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, castDir);
+		transform.gameObject.layer = 0;
 		if (hit.collider != null)
         {
 			return hit.collider.gameObject;
