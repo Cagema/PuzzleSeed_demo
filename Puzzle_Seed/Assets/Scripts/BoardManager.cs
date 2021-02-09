@@ -53,4 +53,48 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
+
+    public IEnumerator FindNullTiles()
+    {
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                if (tiles[x, y].GetComponent<SpriteRenderer>().sprite == null)
+                {
+                    yield return StartCoroutine(ShiftTilesDown(x, y));
+                    break;
+                }
+            }
+        }
+    }
+
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = .03f)
+    {
+        isShifting = true;
+        List<SpriteRenderer> renders = new List<SpriteRenderer>();
+        int nullCount = 0;
+
+        for (int y = yStart; y < ySize; y++)
+        {
+            SpriteRenderer render = tiles[x, y].GetComponent<SpriteRenderer>();
+            if (render.sprite == null)
+            {
+                nullCount++;
+            }
+            renders.Add(render);
+        }
+
+        for (int i = 0; i < nullCount; i++)
+        {
+            yield return new WaitForSeconds(shiftDelay);
+            for (int k = 0; k < renders.Count - 1; k++)
+            {
+                renders[k].sprite = renders[k + 1].sprite;
+                renders[k + 1].sprite = gems[Random.Range(0, gems.Count)];
+            }
+        }
+
+        isShifting = false;
+    }
 }
