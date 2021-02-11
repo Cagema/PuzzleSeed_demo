@@ -67,10 +67,23 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+        FindComboTiles();
     }
 
-    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = .03f)
+    public void FindComboTiles()
     {
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                tiles[x, y].GetComponent<Tile>().ClearAllMatches();
+            }
+        }
+    }
+
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = .4f)
+    {
+        
         isShifting = true;
         List<SpriteRenderer> renders = new List<SpriteRenderer>();
         int nullCount = 0;
@@ -83,18 +96,49 @@ public class BoardManager : MonoBehaviour
                 nullCount++;
             }
             renders.Add(render);
-        }
 
+            print("x = " + x + ", y = " + y + ", " + render.name);
+        }
+        print("done!");
+        
         for (int i = 0; i < nullCount; i++)
         {
             yield return new WaitForSeconds(shiftDelay);
+            if (renders.Count == 1 && nullCount == 1)
+            {
+                renders[0].sprite = GetNewSprite(x, ySize - 1);
+                break;
+            }
             for (int k = 0; k < renders.Count - 1; k++)
             {
                 renders[k].sprite = renders[k + 1].sprite;
-                renders[k + 1].sprite = gems[Random.Range(0, gems.Count)];
+                renders[k + 1].sprite = GetNewSprite(x, ySize - 1);
             }
+
         }
+        print("down done");
 
         isShifting = false;
+    }
+
+    private Sprite GetNewSprite(int x, int y)
+    {
+        List<Sprite> possibleGems = new List<Sprite>();
+        possibleGems.AddRange(gems);
+
+       /* if (x > 0)
+        {
+            possibleGems.Remove(tiles[x - 1, y].GetComponent<SpriteRenderer>().sprite);
+        }
+        if (x < xSize - 1)
+        {
+            possibleGems.Remove(tiles[x + 1, y].GetComponent<SpriteRenderer>().sprite);
+        }
+        if (y > 0)
+        {
+            possibleGems.Remove(tiles[x, y-1].GetComponent<SpriteRenderer>().sprite);
+        }
+       */
+        return possibleGems[Random.Range(0, possibleGems.Count)];
     }
 }

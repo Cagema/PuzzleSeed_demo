@@ -60,8 +60,7 @@ public class Tile : MonoBehaviour
 					previousSelected.ClearAllMatches();
 					previousSelected.Deselect();
 					ClearAllMatches();
-					StopCoroutine(BoardManager.S.FindNullTiles());
-					StartCoroutine(BoardManager.S.FindNullTiles());
+					//BoardManager.S.FindComboTiles();
 				}
                 else
                 {
@@ -94,9 +93,7 @@ public class Tile : MonoBehaviour
 
 	private GameObject GetAdjacent(Vector2 castDir)
     {
-		//transform.gameObject.layer = 2;
 		RaycastHit2D hit = Physics2D.Raycast(transform.position + (new Vector3(castDir.x, castDir.y, 0) * 2.56f), castDir);
-		//transform.gameObject.layer = 0;
 		if (hit.collider != null)
         {
 			return hit.collider.gameObject;
@@ -117,15 +114,11 @@ public class Tile : MonoBehaviour
 	private List<GameObject> FindMatch(Vector2 castDir)
     {
 		List<GameObject> matchingTiles = new List<GameObject>();
-		//transform.gameObject.layer = 2;
 		RaycastHit2D hit = Physics2D.Raycast(transform.position + (new Vector3(castDir.x, castDir.y, 0) * 2.56f), castDir);
-		//transform.gameObject.layer = 0;
 		while (hit.collider != null && hit.collider.GetComponent<SpriteRenderer>().sprite == render.sprite)
         {
 			matchingTiles.Add(hit.collider.gameObject);
-			//hit.collider.transform.gameObject.layer = 2;
 			hit = Physics2D.Raycast(hit.collider.transform.position + (new Vector3(castDir.x, castDir.y, 0) * 2.56f), castDir);
-			//hit.collider.transform.gameObject.layer = 0;
 		}
 		
 		return matchingTiles;
@@ -162,7 +155,9 @@ public class Tile : MonoBehaviour
         {
 			render.sprite = null;
 			matchFound = false;
+            StopCoroutine(BoardManager.S.FindNullTiles());
+			StartCoroutine(BoardManager.S.FindNullTiles());
 			// *Sound* SFXManager.S.PlaySFX(Clip.Clear);
-        }
+		}
     }
 }
